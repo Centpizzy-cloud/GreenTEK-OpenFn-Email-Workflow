@@ -4,91 +4,61 @@ This project automates the process of reading, filtering, and logging emails usi
 
 ---
 
-## 🚨 Problem
+## ✅ Update Summary – June 2025
 
-Many individuals and NGOs are overwhelmed with too many emails — job applications, requests, spam, and even phishing. There's no structure, and important messages get lost or ignored.
+After testing and refining the automation pipeline, the following improvements were made:
+
+### 🔄 Changes & Fixes
+- 🛠 **Fixed crash errors** caused by undefined `filteredEmails` using a safe fallback.
+- ✅ Added a logic check before pushing to Google Sheets to avoid `map()` errors when no emails are found.
+- 🧠 Improved the data extraction logic to ensure consistent formatting from Gmail message contents.
+- 📋 Updated the Google Sheets adaptor job to use `appendValues()` instead of the incorrect `updateValues()`.
+
+### 😮 Challenges Encountered
+- Emails weren’t being picked up initially — caused by no matching Gmail query results (like no unread job-related messages).
+- Runtime errors occurred due to `.map()` being used on `undefined` — solved by setting a default empty array and conditionally checking.
+- Confusion between adaptor function names (`appendValues` vs `updateValues`) — clarified through documentation and error logs.
+![image](https://github.com/user-attachments/assets/f71fb9a9-6fc2-490e-93ea-cd03ab3c05b3)
+
+![image](https://github.com/user-attachments/assets/4a7c3837-19fb-4913-8000-b95f9d196f0f)
+
+
 
 ---
 
-## ✅ Solution
-
-Using OpenFn's automation tools, this project:
-
-- Automatically fetches recent Gmail messages
-- Filters emails into categories:
-  - **Important** – e.g., messages with keywords like _job_, _interview_, _application_
-  - **Suspicious** – e.g., messages with keywords like _verify_, _click here_, _confirm password_
-- Saves email details (subject, sender, snippet, date) into Google Sheets
-- (Coming soon): Sends summary notifications or alerts
+## 🧠 What I Learned
+- Understanding how **`state` flows across OpenFn jobs** is crucial for error-free automation.
+- Simple checks like `if (!state.filteredEmails)` can save your entire pipeline from breaking.
+- The importance of **reading adaptor documentation** to understand function behavior.
+- OpenFn's logs and error tracebacks are super helpful when debugging!
 
 ---
 
-## ⚙️ Tools & Services Used
+## ⚙️ Workflow Overview
 
-| Tool/Service        | Description                         |
-|---------------------|-------------------------------------|
-| **Gmail**           | Source of emails                    |
-| **Google Sheets**   | Destination for email logs          |
-| **OpenFn**          | Workflow automation platform        |
-| **Adaptors**        | Gmail, Google Sheets, HTTP, Common  |
-| **JavaScript `fn()`** | For formatting/filtering logic     |
-| **Cron Trigger**    | For daily automation scheduling     |
+| Step | Description |
+|------|-------------|
+| ✅ **Job 1:** Fetch unread Gmail messages matching keywords like "job", "application" |
+| ✅ **Job 2:** Extract subject, sender, date, body snippet, and create Gmail link |
+| ✅ **Job 3:** Append formatted rows to Google Sheet for easy review & tracking |
 
 ---
 
-## 🧠 How It Works
+## 🔗 Spreadsheet Output Example
 
-Each OpenFn job is a step in the pipeline:
-
-1. **📥 Fetch Emails from Gmail**  
-   - Uses keyword filters (subject/body)
-   - Only unread and recent messages
-2. **🧹 Extract & Format Data**  
-   - Pulls: Subject, Sender, Snippet, Date, Message ID
-3. **📤 Save to Google Sheets**  
-   - Appends formatted data to a connected sheet
-4. **(Optional) 🔔 Notify via summary**  
-   - Future feature to send alert summaries via email/SMS
+| Date | From | Subject | Body Preview | Message ID | Gmail Link |
+|------|------|---------|---------------|------------|-------------|
+| 2025-06-22 | hr@company.com | Job Application | Thank you for applying to... | 17e4a8... | [Open](https://mail.google.com/mail/u/0/#inbox/... |
 
 ---
 
-## 🔄 Workflow Diagram (Simplified)
-
-![image](https://github.com/user-attachments/assets/c2ad6f2b-1cd7-4e16-a832-579d051a0848)
-
-
-## 🔄 2. Workflow Steps
-
-| Step | Description | Adaptor |
-|------|-------------|---------|
-| 1️⃣ | Fetch unread Gmail messages with job-related keywords | `@openfn/language-gmail` |
-| 2️⃣ | Extract key data from messages | `@openfn/language-common` |
-| 3️⃣ | Format the email records | `@openfn/language-common` |
-| 4️⃣ | Append formatted data to Google Sheets | `@openfn/language-googlespreadsheet` |
-| 5️⃣ | (Optional) Send notifications or summary | `http` or `email` |
+## 🙌 Next Steps
+- Add logic to detect **phishing or scam** messages based on suspicious keywords
+- Build in **SMS or email alerts** for specific types of urgent messages
+- Offer this as a **template** for NGOs and small orgs struggling with email overload
 
 ---
 
-## 🔑 3. Credentials Used
-
-| Service | Method | Notes |
-|---------|--------|-------|
-| Gmail | OAuth via OpenFn | Token must be refreshed periodically |
-| Google Sheets | OAuth via OpenFn | Ensure permissions are properly granted |
-
----
-
-## 🧠 4. Code Snippets
-
-### 📥 Fetching Emails
-
-```js
-getContentsFromMessages({
-  query: 'is:unread (subject:(job OR application OR request) OR body:(job OR application OR request))',
-  maxResults: 50,
-  contents: ['from', 'date', 'subject', 'body']
-});
-
-
-
-
+## 👤 Built by Innocent Ikuku  
+Founder @ **GreenTEK Digitals**  
+OpenFn Affiliate Partner | DevOps | Cloud & Cybersecurity Explorer  
